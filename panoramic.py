@@ -45,8 +45,8 @@ def extract():
 
     # ask for the entire list of offer ids
     offer_data = cache.lrange('{}:offers'.format(request_id), 0, -1)
-    print(offer_data)
-    print(all_europe)
+    # print(offer_data)
+    # print(all_europe)
 
     response = app.response_class(
         response=f'{{"request_id": "{request_id}"}}',
@@ -78,8 +78,8 @@ def extract():
                         response_query = requests.get(overpass_url,
                                                       params={'data': overpass_query}, timeout=5)
                         data = response_query.json()
-                    else:
                         leg_points_of_interest.append(len(data['elements']), )
+                    else:
                         # first the longitude, then the latitude
                         leg_start_coordinates = Point([track['coordinates'][0][1], track['coordinates'][0][0]])
                         # print(leg_start_coordinates)
