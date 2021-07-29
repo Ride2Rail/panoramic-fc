@@ -64,39 +64,63 @@ def check_country(intial_coordinates):
         return 'other'
 
 
-def osm_query(lat_ini, long_ini, lat_end, long_end):
-    query = """
-    [out:json];
-    (
-    node["historic"="monument"](around:100, {latini},{lonini});
-    node["historic"="monument"](around:100, {latend},{longend});
-    node["tourism"="attraction"](around:100, {latini},{lonini});
-    node["tourism"="attraction"](around:100, {latend},{longend});
-    node["tourism"="artwork"](around:100, {latini},{lonini});
-    node["tourism"="artwork"](around:100, {latend},{longend});
-    node["historic"="archaeological_site"](around:100, {latini},{lonini});
-    node["historic"="archaeological_site"](around:100, {latend},{longend});
-    node["historic"="wayside_cross"](around:100, {latini},{lonini});
-    node["historic"="wayside_cross"](around:100, {latend},{longend});
-    node["historic"="memorial"](around:100, {latini},{lonini});
-    node["historic"="memorial"](around:100, {latend},{longend});
-    node["historic"="yes"](around:100, {latini},{lonini});
-    node["historic"="yes"](around:100, {latend},{longend});
-    node["historic"="wayside_shrine"](around:100, {latini},{lonini});
-    node["historic"="wayside_shrine"](around:100, {latend},{longend});
-    node["historic"="ruins"](around:100, {latini},{lonini});
-    node["historic"="ruins"](around:100, {latend},{longend});
-    node["natural"="coastline"](around:100, {latini},{lonini});
-    node["natural"="coastline"](around:100, {latend},{longend});
-    node["natural"="water"](around:100, {latini},{lonini});
-    node["natural"="water"](around:100, {latend},{longend});
-    node["natural"="peak"](around:100, {latini},{lonini});
-    node["natural"="peak"](around:100, {latend},{longend});
-    node["natural"="cliff"](around:100, {latini},{lonini});
-    node["natural"="cliff"](around:100, {latend},{longend});
-    node["tourism"="viewpoint"](around:100, {latini},{lonini});
-    node["tourism"="viewpoint"](around:100, {latend},{longend});
-    );
-    out center;
-    """.format(latini=lat_ini, lonini=long_ini, latend=lat_end, longend=long_end)
+def osm_query(lat_ini, long_ini, lat_end, long_end, last_leg=False):
+    if last_leg:
+        query = """
+        [out:json];
+        (
+        node["historic"="monument"](around:100, {latini},{lonini});
+        node["historic"="monument"](around:100, {latend},{longend});
+        node["tourism"="attraction"](around:100, {latini},{lonini});
+        node["tourism"="attraction"](around:100, {latend},{longend});
+        node["tourism"="artwork"](around:100, {latini},{lonini});
+        node["tourism"="artwork"](around:100, {latend},{longend});
+        node["historic"="archaeological_site"](around:100, {latini},{lonini});
+        node["historic"="archaeological_site"](around:100, {latend},{longend});
+        node["historic"="wayside_cross"](around:100, {latini},{lonini});
+        node["historic"="wayside_cross"](around:100, {latend},{longend});
+        node["historic"="memorial"](around:100, {latini},{lonini});
+        node["historic"="memorial"](around:100, {latend},{longend});
+        node["historic"="yes"](around:100, {latini},{lonini});
+        node["historic"="yes"](around:100, {latend},{longend});
+        node["historic"="wayside_shrine"](around:100, {latini},{lonini});
+        node["historic"="wayside_shrine"](around:100, {latend},{longend});
+        node["historic"="ruins"](around:100, {latini},{lonini});
+        node["historic"="ruins"](around:100, {latend},{longend});
+        node["natural"="coastline"](around:100, {latini},{lonini});
+        node["natural"="coastline"](around:100, {latend},{longend});
+        node["natural"="water"](around:100, {latini},{lonini});
+        node["natural"="water"](around:100, {latend},{longend});
+        node["natural"="peak"](around:100, {latini},{lonini});
+        node["natural"="peak"](around:100, {latend},{longend});
+        node["natural"="cliff"](around:100, {latini},{lonini});
+        node["natural"="cliff"](around:100, {latend},{longend});
+        node["tourism"="viewpoint"](around:100, {latini},{lonini});
+        node["tourism"="viewpoint"](around:100, {latend},{longend});
+        );
+        out center;
+        """.format(latini=lat_ini, lonini=long_ini, latend=lat_end, longend=long_end) 
+
+    else:
+        query = """
+        [out:json];
+        (
+        node["historic"="monument"](around:100, {latini},{lonini});
+        node["tourism"="attraction"](around:100, {latini},{lonini});
+        node["tourism"="artwork"](around:100, {latini},{lonini});
+        node["historic"="archaeological_site"](around:100, {latini},{lonini});
+        node["historic"="wayside_cross"](around:100, {latini},{lonini});
+        node["historic"="memorial"](around:100, {latini},{lonini});
+        node["historic"="yes"](around:100, {latini},{lonini});
+        node["historic"="wayside_shrine"](around:100, {latini},{lonini});
+        node["historic"="ruins"](around:100, {latini},{lonini});
+        node["natural"="coastline"](around:100, {latini},{lonini});
+        node["natural"="water"](around:100, {latini},{lonini});
+        node["natural"="peak"](around:100, {latini},{lonini});
+        node["natural"="cliff"](around:100, {latini},{lonini});
+        node["tourism"="viewpoint"](around:100, {latini},{lonini});
+        );
+        out center;
+        """.format(latini=lat_ini, lonini=long_ini) 
+
     return query
