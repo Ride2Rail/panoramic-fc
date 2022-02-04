@@ -30,7 +30,7 @@ docker run \
 ```
 
 ```bash
-$ FLASK_APP='panoramic.py' flask run)
+$ FLASK_APP='panoramic.py' flask run
  * Serving Flask app "panoramic.py"
  * Environment: production
    WARNING: This is a development server. Do not use it in a production deployment.
