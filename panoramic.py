@@ -51,8 +51,6 @@ def extract():
 
     # ask for the entire list of offer ids
     offer_data = cache.lrange('{}:offers'.format(request_id), 0, -1)
-    # print(offer_data)
-    # print(all_europe)
 
     response = app.response_class(
         response=f'{{"request_id": "{request_id}"}}',
@@ -83,7 +81,6 @@ def extract():
     except:
         time_zone = timezone.utc
     current_time = dt.now(tz=time_zone)
-    logger.info(f'Current time: {current_time}')
 
     offer_points_of_interest = dict()
     if 'offer_ids' in output_offer_level.keys():
@@ -93,9 +90,6 @@ def extract():
                 # 'reversed' sorts legs chronologically by start time, from first to last 
                 leg_ids = list(reversed(output_tripleg_level[offer_id]['triplegs']))
 
-                logger.info('New offer')
-
-                #for leg_index,leg_id in enumerate(output_tripleg_level[offer_id]['triplegs']):
                 for i in range(len(leg_ids)):
                     next_start_time_string = output_tripleg_level[offer_id][leg_ids[i]]['start_time']
                     try:
@@ -104,10 +98,8 @@ def extract():
                         # this is to handle an error in the formatting of the time string in some TRIAS files
                         next_start_time_string = next_start_time_string[:next_start_time_string.index('+')] + '0' + next_start_time_string[next_start_time_string.index('+'):]
                         next_start_time = dt.fromisoformat(next_start_time_string)
-                    logger.info(f'Next leg starts at {next_start_time}')
                     if i == 0:
                         waiting_time = (next_start_time - current_time).total_seconds()/60
-                        logger.info(f'This is the first leg.')
                     else:
                         previous_end_time_string = output_tripleg_level[offer_id][leg_ids[i-1]]['end_time']
                         try:
@@ -116,7 +108,6 @@ def extract():
                             # this is to handle an error in the formatting of the time string in some TRIAS files
                             previous_end_time_string = previous_end_time_string[:previous_end_time_string.index('+')] + '0' + previous_end_time_string[previous_end_time_string.index('+'):]
                             previous_end_time = dt.fromisoformat(previous_end_time_string)
-                        logger.info(f'Previous leg ends at {previous_end_time}')
                         waiting_time = (next_start_time - previous_end_time).total_seconds()/60
 
                     if execution_mode == 'TEST' and waiting_time == 0 and minimum_waiting > 0:
@@ -128,7 +119,6 @@ def extract():
 
                         if i == len(output_tripleg_level[offer_id]['triplegs']) - 1:
                             last_leg = True
-                            logger.info(f'This is the last leg.')
                         else:
                             last_leg = False
 
@@ -142,22 +132,16 @@ def extract():
                             overpass_query = osm_query(lat_ini, long_ini, lat_end, long_end, last_leg=last_leg)
                             response_query = requests.get(overpass_url,
                                                           params={'data': overpass_query})#, timeout=5)
-                            print(response_query, flush=True)
                             data = response_query.json()
-                            print(data, flush=True)
                             leg_points_of_interest.append(len(data['elements']), )
                         else:
                             # first the longitude, then the latitude
                             leg_start_coordinates = Point([track['coordinates'][0][1], track['coordinates'][0][0]])
-                            # print(leg_start_coordinates)
                             country = check_country(leg_start_coordinates)
-                            print(country)
-                            # country = 'spain'
                             if country in countries:
                                 lat_ini, long_ini = str(track['coordinates'][0][0]), str(track['coordinates'][0][1])
                                 lat_end, long_end = str(track['coordinates'][-1][0]), str(track['coordinates'][-1][1])
-                                # lat_ini, long_ini = str(39.8581), str(-4.02263)
-                                # lat_end, long_end = str(40.4165), str(-3.70256)
+
                                 overpass_url = "http://172.20.48.31/{}/api/interpreter".format(country)
                                 overpass_query = osm_query(lat_ini, long_ini, lat_end, long_end)
                                 response_query = requests.get(overpass_url,
@@ -169,12 +153,10 @@ def extract():
                                 leg_points_of_interest.append(np.random.randint(0, 3))
 
             offer_points_of_interest.setdefault(offer_id, sum(leg_points_of_interest))
-        print(offer_points_of_interest)
         if score == 'z_score':
             normalized_points_of_interest = zscore(offer_points_of_interest)
         else:
             normalized_points_of_interest = minmaxscore(offer_points_of_interest)
-        print(normalized_points_of_interest)
         # store data to the cache
         try:
             store_simple_data_to_cache_wrapper(cache, request_id, normalized_points_of_interest, 'panoramic')
